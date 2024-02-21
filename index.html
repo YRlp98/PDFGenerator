@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Generation</title>
+
+    <style>
+        body,
+        html {
+            margin: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .pdf-container {
+            width: 100%;
+            height: 100vh;
+        }
+
+        #pdfViewer {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap">
+
+</head>
+
+<body>
+    <div class="pdf-container">
+        <embed id="pdfViewer" type="application/pdf" style="width: 100%; height: 100%" />
+    </div>
+
+    <script type="module">
+        import generatePDF from './src/generatePDF.js';
+
+        // Call generatePDF function to get the data URI
+        const pdfContent = generatePDF();
+
+        // Set the data URI as the source for the embed tag
+        const pdfViewer = document.getElementById("pdfViewer");
+        pdfViewer.src = pdfContent;
+    </script>
+</body>
+
+</html>
