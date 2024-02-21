@@ -66,7 +66,7 @@ const headerSection = () => {
     const rectangleWidth = doc.internal.pageSize.width - 40;
     const rectangleHalfWidth = (doc.internal.pageSize.width - 40) / 2.1;
 
-    addRoundedRect(20, headerHeight, rectangleWidth, rectangleHeight, 6, "#FFFFFF", purple_color, 0.5);
+    addRoundedRect(20, headerHeight, rectangleWidth, rectangleHeight, 2, "#FFFFFF", purple_color, 0.5);
 
     // Header Section contents
     const padding = 5;
