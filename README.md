@@ -1,2 +1,2 @@
-# pdf_generator
+# PDFGenerator
 PDF Generator using jsPDF
