@@ -146,9 +146,9 @@ const bodySection = (headerHeight) => {
             "Alert",
         ],
         [
-            "40 repeater",
-            "38/5-50",
-            "C2508-156",
+            "401 Repeater",
+            "25/9-88",
+            "AB607-256",
             "HWM",
             "OK",
             "inactive",
@@ -162,7 +162,7 @@ const bodySection = (headerHeight) => {
             "OK",
             "inactive",
             "OK",
-        ]
+        ],
     ]
 
     // Headers
@@ -201,41 +201,76 @@ const bodySection = (headerHeight) => {
 
     textStyle("normal", black_color);
     const rowHeight = 6;
-    tableData.forEach((row, rowIndex) => {
-        row.forEach((cellData, cellIndex) => {
-            const cellX = 10 + cellIndex * (subCellWidth + spaceBetweenCells);
-            const cellY = headerHeight + 20 + rowIndex * (rowHeight + 2);
-            const cellWidth = subCellWidth;
-            const cellHeight = rowHeight;
+    const maxRowsPerPage = 16;
+    let currentRow = 0;
+    let currentPage = 1;
 
-            let fillColor = gray_color;
-            let textColor = black_color;
+    const drawTableRows = () => {
+        let currentMaxRowsPerPage;
+        let startY;
+        if (currentPage === 1) {
+            // For the first page, consider the header height
+            startY = headerHeight + 20;
+        } else {
+            // For subsequent pages, start from the top of the page
+            startY = 10;
+        }
 
-            // Check cell data and set background color and text color accordingly
-            if (cellData.toLowerCase() === "alert") {
-                fillColor = red_color;
-                textColor = white_color;
-            } else if (cellData.toLowerCase() === "ok") {
-                fillColor = green_color;
-                textColor = white_color;
-            }
+        while (currentRow < tableData.length && currentRow < maxRowsPerPage * currentPage) {
+            const row = tableData[currentRow];
 
-            addRoundedRect(cellX, cellY, cellWidth, cellHeight, 1, fillColor, fillColor, 0.5);
+            row.forEach((cellData, cellIndex) => {
+                const cellX = 10 + cellIndex * (subCellWidth + spaceBetweenCells);
+                const cellY = startY + (currentRow % maxRowsPerPage) * (rowHeight + 2);
+                const cellWidth = subCellWidth;
+                const cellHeight = rowHeight;
 
-            // Truncate the cell data based on the cell width
-            const truncatedCellData = truncateText(cellData, cellWidth, 2);
+                let fillColor = gray_color;
+                let textColor = black_color;
 
-            // Calculate the x-coordinate to center the text within the cell
-            const textX = cellX + (cellWidth - doc.getTextDimensions(truncatedCellData).w) / 2;
+                // Check cell data and set background color and text color accordingly
+                if (cellData.toLowerCase() === "alert") {
+                    fillColor = red_color;
+                    textColor = white_color;
+                } else if (cellData.toLowerCase() === "ok") {
+                    fillColor = green_color;
+                    textColor = white_color;
+                }
 
-            // Calculate the y-coordinate to center the text vertically within the cell
-            const textY = cellY + cellHeight - 2;
+                addRoundedRect(cellX, cellY, cellWidth, cellHeight, 1, fillColor, fillColor, 0.5);
 
-            // Set the text color
-            textStyle("normal", textColor);
+                // Truncate the cell data based on the cell width
+                const truncatedCellData = truncateText(cellData, cellWidth, 2.5);
 
-            addText(truncatedCellData, textX, textY);
-        });
-    });
+                // Calculate the x-coordinate to center the text within the cell
+                const textX = cellX + (cellWidth - doc.getTextDimensions(truncatedCellData).w) / 2;
+
+                // Calculate the y-coordinate to center the text vertically within the cell
+                const textY = cellY + cellHeight - 2;
+
+                // Set the text color
+                textStyle("normal", textColor);
+
+                addText(truncatedCellData, textX, textY);
+            });
+
+            currentRow++;
+        }
+    };
+
+    const totalPages = Math.ceil(tableData.length / maxRowsPerPage);
+
+    // Draw table rows on each page
+    while (currentPage <= totalPages) {
+        // Add a new page if there are more rows to be drawn
+        if (currentPage > 1) {
+            doc.addPage({ orientation: "landscape", unit: "mm", format: 'a4' });
+        }
+
+        drawTableRows();
+
+        // Move to the next page
+        currentPage++;
+    }
 };
 export default generatePDF;
