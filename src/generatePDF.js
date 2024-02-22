@@ -2,6 +2,7 @@ import { jsPDF } from 'https://cdn.skypack.dev/jspdf@2.4.0';
 
 // Colors
 const black_color = "#000000";
+const white_color = "#FFFFFF";
 const green_color = "#3CCB83";
 const red_color = "#EF5C5C";
 const purple_color = "#8F39A9";
@@ -11,9 +12,9 @@ const dark_gray_color = "#344563";
 
 const gap = 0.7;
 const lineGap = 8;
-const doc = new jsPDF({ orientation: "landscape", unit: "mm" });
+const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: 'a4' });
 
-const projectInfo = {
+const reportInfo = {
     "reportGeneratedBy": "Yousef Roshandel",
     "reportGenerateDate": "10/05/2022 - 12:30",
     "projectDetails": [
@@ -55,6 +56,20 @@ const generatePDF = () => {
     return pdfDataUri;
 };
 
+// Helper function to truncate text based on available width
+const truncateText = (text, maxWidth, fontSize) => {
+    let truncatedText = text;
+    const textWidth = doc.getTextDimensions(text).w * fontSize / doc.internal.scaleFactor;
+
+    if (textWidth > maxWidth) {
+        const ellipsisWidth = doc.getTextDimensions('...').w * fontSize / doc.internal.scaleFactor;
+        const maxChars = Math.floor((maxWidth - ellipsisWidth) / (textWidth / text.length));
+        truncatedText = text.substring(0, maxChars) + '...';
+    }
+
+    return truncatedText;
+};
+
 const headerSection = () => {
     doc.setFontSize(11);
 
@@ -63,20 +78,20 @@ const headerSection = () => {
     const headerHeight = doc.getTextDimensions(headerText).h + gap; // Calculate header height
 
     const rectangleHeight = 52;
-    const rectangleWidth = doc.internal.pageSize.width - 40;
-    const rectangleHalfWidth = (doc.internal.pageSize.width - 40) / 2.1;
+    const rectangleWidth = doc.internal.pageSize.width - 20;
+    const rectangleHalfWidth = (doc.internal.pageSize.width - 20) / 2.1;
 
-    addRoundedRect(20, headerHeight, rectangleWidth, rectangleHeight, 2, "#FFFFFF", purple_color, 0.5);
+    addRoundedRect(10, headerHeight, rectangleWidth, rectangleHeight, 2, white_color, purple_color, 0.5);
 
     // Header Section contents
     const padding = 5;
-    const contentX = 20 + padding;
+    const contentX = 10 + padding;
     const contentY = headerHeight + padding + 3;
 
     // Logo
     const logoWidth = 20;
     const logoHeight = 10;
-    const logoX = 20 + padding;
+    const logoX = 10 + padding;
     const logoY = headerHeight + padding + 3;
     doc.addImage('../assets/syte-logo.png', 'PNG', logoX, logoY, logoWidth, logoHeight);
 
@@ -86,8 +101,8 @@ const headerSection = () => {
     addText("Report Generate Date:", contentX, contentY + 30 + lineGap);
 
     textStyle("normal", dark_gray_color);
-    addText(projectInfo.reportGeneratedBy, contentX + 40, contentY + 30);
-    addText(projectInfo.reportGenerateDate, contentX + 40, contentY + 30 + lineGap);
+    addText(reportInfo.reportGeneratedBy, contentX + 40, contentY + 30);
+    addText(reportInfo.reportGenerateDate, contentX + 40, contentY + 30 + lineGap);
 
     // Report Details
     textStyle("bold", dark_gray_color);
@@ -100,7 +115,7 @@ const headerSection = () => {
 
     const detailsYSpace = 85;
     textStyle("normal", dark_gray_color);
-    projectInfo.projectDetails.forEach((detail, index) => {
+    reportInfo.projectDetails.forEach((detail, index) => {
         addText(detail, rectangleHalfWidth + detailsYSpace, contentY + lineGap * index);
     });
 
@@ -108,10 +123,83 @@ const headerSection = () => {
 };
 
 const bodySection = (headerHeight) => {
-    doc.setFontSize(12);
+    doc.setFontSize(10);
 
     // Add content to the PDF table section
-    addText("Your table content goes here...", 20, headerHeight + lineGap);
-};
+    // addText("Your table content goes here...", 20, headerHeight + lineGap);
+    const tableSubHeaders = ["Sign", "Location", "Asset ID", "Type", "00:00", "02:00", "04:00", "06:00", "08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00", "22:00"];
+    const tableData = [
+        "40 repeater",
+        "38/5-50",
+        "C2508-156",
+        "HWM",
+        "OK",
+        "inactive",
+        "Alert",
+        "OK",
+        "OK",
+        "OK",
+        "OK",
+        "OK",
+        "OK",
+        "OK",
+        "OK",
+        "OK",
+    ]
 
+    // Headers
+    textStyle("bold", purple_color);
+    addRoundedRect(10, headerHeight + 4, 68, 6, 1, light_purple_color, light_purple_color, 0.5);
+    addText("Sign & Detail", 30, headerHeight + 8);
+    addRoundedRect(80, headerHeight + 4, 207, 6, 1, light_purple_color, light_purple_color, 0.5);
+    addText("Time and Status of Check", 160, headerHeight + 8);
+
+    // SubHeaders
+    const subCellWidth = 15.4;
+    const spaceBetweenCells = 2;
+
+    textStyle("bold", white_color);
+    tableSubHeaders.forEach((header, index) => {
+        const cellX = 10 + index * (subCellWidth + spaceBetweenCells);
+        const cellY = headerHeight + 12;
+        const cellHeight = 6;
+
+        addRoundedRect(cellX, cellY, subCellWidth, cellHeight, 1, purple_color, purple_color, 0.5);
+
+        // Calculate the x-coordinate to center the text within the cell
+        const textX = cellX + (subCellWidth - doc.getTextDimensions(header).w) / 2;
+
+        // Calculate the y-coordinate to center the text vertically within the cell
+        const textY = cellY + cellHeight - 2;
+
+        addText(header, textX, textY);
+    });
+
+    textStyle("bold", purple_color);
+    addRoundedRect(10, headerHeight + 4, 68, 6, 1, light_purple_color, light_purple_color, 0.5);
+    addText("Sign & Detail", 30, headerHeight + 8);
+    addRoundedRect(80, headerHeight + 4, 207, 6, 1, light_purple_color, light_purple_color, 0.5);
+    addText("Time and Status of Check", 160, headerHeight + 8);
+
+    // HeaderBody
+    textStyle("normal", black_color);
+    tableData.forEach((header, index) => {
+        const cellX = 10 + index * (subCellWidth + spaceBetweenCells);
+        const cellY = headerHeight + 20;
+        const cellHeight = 6;
+
+        addRoundedRect(cellX, cellY, subCellWidth, cellHeight, 1, gray_color, gray_color, 0.5);
+
+        // Truncate the header text based on the cell width
+        const truncatedHeader = truncateText(header, subCellWidth, 2);
+
+        // Calculate the x-coordinate to center the text within the cell
+        const textX = cellX + (subCellWidth - doc.getTextDimensions(header).w) / 2;
+
+        // Calculate the y-coordinate to center the text vertically within the cell
+        const textY = cellY + cellHeight - 2;
+
+        addText(truncatedHeader, textX, textY);
+    });
+};
 export default generatePDF;
