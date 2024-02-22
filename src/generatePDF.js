@@ -47,16 +47,6 @@ const truncateText = (text, maxWidth, fontSize) => {
     return truncatedText;
 };
 
-const generatePDF = () => {
-    const headerHeight = headerSection();
-    bodySection(headerHeight);
-
-    // Save the PDF or get the data URI
-    const pdfDataUri = doc.output("datauristring");
-
-    return pdfDataUri;
-};
-
 const headerSection = () => {
     doc.setFontSize(11);
 
@@ -93,6 +83,7 @@ const headerSection = () => {
     const logoHeight = 10;
     const logoX = 10 + padding;
     const logoY = headerHeight + padding + 3;
+
     doc.addImage('../assets/syte-logo.png', 'PNG', logoX, logoY, logoWidth, logoHeight);
 
     // Report Generated Details
@@ -122,9 +113,96 @@ const headerSection = () => {
     return headerHeight + rectangleHeight;
 };
 
+const drawTableHeaders = (headerHeight) => {
+    textStyle("bold", purple_color);
+    addRoundedRect(10, headerHeight + 4, 68, 6, 1, light_purple_color, light_purple_color, 0.5);
+    addText("Sign & Detail", 30, headerHeight + 8);
+    addRoundedRect(80, headerHeight + 4, 207, 6, 1, light_purple_color, light_purple_color, 0.5);
+    addText("Time and Status of Check", 160, headerHeight + 8);
+};
+
+const drawTableSubHeader = (tableSubHeaders, subCellWidth, spaceBetweenCells, headerHeight) => {
+    textStyle("bold", white_color);
+    tableSubHeaders.forEach((header, index) => {
+        const cellX = 10 + index * (subCellWidth + spaceBetweenCells);
+        const cellY = headerHeight + 12;
+        const cellHeight = 6;
+
+        addRoundedRect(cellX, cellY, subCellWidth, cellHeight, 1, purple_color, purple_color, 0.5);
+
+        // Calculate the x-coordinate to center the text within the cell
+        const textX = cellX + (subCellWidth - doc.getTextDimensions(header).w) / 2;
+
+        // Calculate the y-coordinate to center the text vertically within the cell
+        const textY = cellY + cellHeight - 2;
+
+        addText(header, textX, textY);
+    });
+
+    textStyle("bold", purple_color);
+    addRoundedRect(10, headerHeight + 4, 68, 6, 1, light_purple_color, light_purple_color, 0.5);
+    addText("Sign & Detail", 30, headerHeight + 8);
+    addRoundedRect(80, headerHeight + 4, 207, 6, 1, light_purple_color, light_purple_color, 0.5);
+    addText("Time and Status of Check", 160, headerHeight + 8);
+};
+
+const drawTableRows = (rowHeight, maxRowsPerPage, currentRow, currentPage, headerHeight, tableData, subCellWidth, spaceBetweenCells) => {
+    let currentMaxRowsPerPage;
+    let startY;
+    if (currentPage === 1) {
+        // For the first page, consider the header height
+        startY = headerHeight + 20;
+    } else {
+        // For subsequent pages, start from the top of the page
+        startY = 10;
+    }
+
+    while (currentRow < tableData.length && currentRow < maxRowsPerPage * currentPage) {
+        const row = tableData[currentRow];
+
+        row.forEach((cellData, cellIndex) => {
+            const cellX = 10 + cellIndex * (subCellWidth + spaceBetweenCells);
+            const cellY = startY + (currentRow % maxRowsPerPage) * (rowHeight + 2);
+            const cellWidth = subCellWidth;
+            const cellHeight = rowHeight;
+
+            let fillColor = gray_color;
+            let textColor = black_color;
+
+            // Check cell data and set background color and text color accordingly
+            if (cellData.toLowerCase() === "alert") {
+                fillColor = red_color;
+                textColor = white_color;
+            } else if (cellData.toLowerCase() === "ok") {
+                fillColor = green_color;
+                textColor = white_color;
+            }
+
+            addRoundedRect(cellX, cellY, cellWidth, cellHeight, 1, fillColor, fillColor, 0.5);
+
+            // Truncate the cell data based on the cell width
+            const truncatedCellData = truncateText(cellData, cellWidth, 2.5);
+
+            // Calculate the x-coordinate to center the text within the cell
+            const textX = cellX + (cellWidth - doc.getTextDimensions(truncatedCellData).w) / 2;
+
+            // Calculate the y-coordinate to center the text vertically within the cell
+            const textY = cellY + cellHeight - 2;
+
+            // Set the text color
+            textStyle("normal", textColor);
+
+            addText(truncatedCellData, textX, textY);
+        });
+
+        currentRow++;
+    }
+};
+
 const bodySection = (headerHeight) => {
     doc.setFontSize(10);
-
+    const subCellWidth = 15.4;
+    const spaceBetweenCells = 2;
     const tableSubHeaders = ["Sign", "Location", "Asset ID", "Type", "00:00", "02:00", "04:00", "06:00", "08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00", "22:00"];
     const tableData = [
         [
@@ -163,100 +241,17 @@ const bodySection = (headerHeight) => {
             "inactive",
             "OK",
         ],
-    ]
 
-    // Headers
-    textStyle("bold", purple_color);
-    addRoundedRect(10, headerHeight + 4, 68, 6, 1, light_purple_color, light_purple_color, 0.5);
-    addText("Sign & Detail", 30, headerHeight + 8);
-    addRoundedRect(80, headerHeight + 4, 207, 6, 1, light_purple_color, light_purple_color, 0.5);
-    addText("Time and Status of Check", 160, headerHeight + 8);
+    ];
 
-    // SubHeaders
-    const subCellWidth = 15.4;
-    const spaceBetweenCells = 2;
-
-    textStyle("bold", white_color);
-    tableSubHeaders.forEach((header, index) => {
-        const cellX = 10 + index * (subCellWidth + spaceBetweenCells);
-        const cellY = headerHeight + 12;
-        const cellHeight = 6;
-
-        addRoundedRect(cellX, cellY, subCellWidth, cellHeight, 1, purple_color, purple_color, 0.5);
-
-        // Calculate the x-coordinate to center the text within the cell
-        const textX = cellX + (subCellWidth - doc.getTextDimensions(header).w) / 2;
-
-        // Calculate the y-coordinate to center the text vertically within the cell
-        const textY = cellY + cellHeight - 2;
-
-        addText(header, textX, textY);
-    });
-
-    textStyle("bold", purple_color);
-    addRoundedRect(10, headerHeight + 4, 68, 6, 1, light_purple_color, light_purple_color, 0.5);
-    addText("Sign & Detail", 30, headerHeight + 8);
-    addRoundedRect(80, headerHeight + 4, 207, 6, 1, light_purple_color, light_purple_color, 0.5);
-    addText("Time and Status of Check", 160, headerHeight + 8);
+    drawTableHeaders(headerHeight);
+    drawTableSubHeader(tableSubHeaders, subCellWidth, spaceBetweenCells, headerHeight);
 
     textStyle("normal", black_color);
     const rowHeight = 6;
     const maxRowsPerPage = 16;
     let currentRow = 0;
     let currentPage = 1;
-
-    const drawTableRows = () => {
-        let currentMaxRowsPerPage;
-        let startY;
-        if (currentPage === 1) {
-            // For the first page, consider the header height
-            startY = headerHeight + 20;
-        } else {
-            // For subsequent pages, start from the top of the page
-            startY = 10;
-        }
-
-        while (currentRow < tableData.length && currentRow < maxRowsPerPage * currentPage) {
-            const row = tableData[currentRow];
-
-            row.forEach((cellData, cellIndex) => {
-                const cellX = 10 + cellIndex * (subCellWidth + spaceBetweenCells);
-                const cellY = startY + (currentRow % maxRowsPerPage) * (rowHeight + 2);
-                const cellWidth = subCellWidth;
-                const cellHeight = rowHeight;
-
-                let fillColor = gray_color;
-                let textColor = black_color;
-
-                // Check cell data and set background color and text color accordingly
-                if (cellData.toLowerCase() === "alert") {
-                    fillColor = red_color;
-                    textColor = white_color;
-                } else if (cellData.toLowerCase() === "ok") {
-                    fillColor = green_color;
-                    textColor = white_color;
-                }
-
-                addRoundedRect(cellX, cellY, cellWidth, cellHeight, 1, fillColor, fillColor, 0.5);
-
-                // Truncate the cell data based on the cell width
-                const truncatedCellData = truncateText(cellData, cellWidth, 2.5);
-
-                // Calculate the x-coordinate to center the text within the cell
-                const textX = cellX + (cellWidth - doc.getTextDimensions(truncatedCellData).w) / 2;
-
-                // Calculate the y-coordinate to center the text vertically within the cell
-                const textY = cellY + cellHeight - 2;
-
-                // Set the text color
-                textStyle("normal", textColor);
-
-                addText(truncatedCellData, textX, textY);
-            });
-
-            currentRow++;
-        }
-    };
 
     const totalPages = Math.ceil(tableData.length / maxRowsPerPage);
 
@@ -267,10 +262,21 @@ const bodySection = (headerHeight) => {
             doc.addPage({ orientation: "landscape", unit: "mm", format: 'a4' });
         }
 
-        drawTableRows();
+        drawTableRows(rowHeight, maxRowsPerPage, currentRow, currentPage, headerHeight, tableData, subCellWidth, spaceBetweenCells);
 
         // Move to the next page
         currentPage++;
     }
 };
+
+const generatePDF = () => {
+    const headerHeight = headerSection();
+    bodySection(headerHeight);
+
+    // Save the PDF or get the data URI
+    const pdfDataUri = doc.output("datauristring");
+
+    return pdfDataUri;
+};
+
 export default generatePDF;
