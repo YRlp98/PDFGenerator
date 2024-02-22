@@ -1,5 +1,9 @@
 import { jsPDF } from 'https://cdn.skypack.dev/jspdf@2.4.0';
 
+const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: 'a4' });
+const gap = 0.7;
+const lineGap = 8;
+
 // Colors
 const black_color = "#000000";
 const white_color = "#FFFFFF";
@@ -9,23 +13,6 @@ const purple_color = "#8F39A9";
 const light_purple_color = "#F6E8FA";
 const gray_color = "#E6E9EF";
 const dark_gray_color = "#344563";
-
-const gap = 0.7;
-const lineGap = 8;
-const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: 'a4' });
-
-const reportInfo = {
-    "reportGeneratedBy": "Yousef Roshandel",
-    "reportGenerateDate": "10/05/2022 - 12:30",
-    "projectDetails": [
-        "Youse's Project #23",
-        "C2508-156",
-        "XXXXX",
-        "Graham construction",
-        "50mph",
-        "HWM_TM_C2508-156_005"
-    ]
-};
 
 // Helper function to set font and text color
 const textStyle = (style, color) => {
@@ -46,16 +33,6 @@ const addText = (text, x, y) => {
     doc.text(text, x, y);
 };
 
-const generatePDF = () => {
-    const headerHeight = headerSection();
-    bodySection(headerHeight);
-
-    // Save the PDF or get the data URI
-    const pdfDataUri = doc.output("datauristring");
-
-    return pdfDataUri;
-};
-
 // Helper function to truncate text based on available width
 const truncateText = (text, maxWidth, fontSize) => {
     let truncatedText = text;
@@ -70,11 +47,34 @@ const truncateText = (text, maxWidth, fontSize) => {
     return truncatedText;
 };
 
+const generatePDF = () => {
+    const headerHeight = headerSection();
+    bodySection(headerHeight);
+
+    // Save the PDF or get the data URI
+    const pdfDataUri = doc.output("datauristring");
+
+    return pdfDataUri;
+};
+
 const headerSection = () => {
     doc.setFontSize(11);
 
+    const reportInfo = {
+        "reportGeneratedBy": "Yousef Roshandel",
+        "reportGenerateDate": "10/05/2022 - 12:30",
+        "projectDetails": [
+            "Youse's Project #23",
+            "C2508-156",
+            "XXXXX",
+            "Graham construction",
+            "50mph",
+            "HWM_TM_C2508-156_005"
+        ]
+    };
+
     // Add content to the header section
-    const headerText = "Header Section - Your Header Text Goes Here";
+    const headerText = "Header Section Text";
     const headerHeight = doc.getTextDimensions(headerText).h + gap; // Calculate header height
 
     const rectangleHeight = 52;
@@ -125,8 +125,6 @@ const headerSection = () => {
 const bodySection = (headerHeight) => {
     doc.setFontSize(10);
 
-    // Add content to the PDF table section
-    // addText("Your table content goes here...", 20, headerHeight + lineGap);
     const tableSubHeaders = ["Sign", "Location", "Asset ID", "Type", "00:00", "02:00", "04:00", "06:00", "08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00", "22:00"];
     const tableData = [
         [
