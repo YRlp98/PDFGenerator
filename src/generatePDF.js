@@ -117,6 +117,7 @@ const headerSection = () => {
 
 const drawTableHeaders = (headerHeight) => {
     textStyle("arial_bold", "bold", purple_color);
+
     addRoundedRect(10, headerHeight + 4, 68, 6, 1, light_purple_color, light_purple_color, 0.5);
     addText("Sign & Detail", 30, headerHeight + 8);
     addRoundedRect(80, headerHeight + 4, 207, 6, 1, light_purple_color, light_purple_color, 0.5);
@@ -125,6 +126,7 @@ const drawTableHeaders = (headerHeight) => {
 
 const drawTableSubHeader = (tableSubHeaders, subCellWidth, spaceBetweenCells, headerHeight) => {
     textStyle("arial_bold", "bold", white_color);
+
     tableSubHeaders.forEach((header, index) => {
         const cellX = 10 + index * (subCellWidth + spaceBetweenCells);
         const cellY = headerHeight + 12;
@@ -151,12 +153,13 @@ const drawTableSubHeader = (tableSubHeaders, subCellWidth, spaceBetweenCells, he
 const drawTableRows = (rowHeight, maxRowsPerPage, currentRow, currentPage, headerHeight, tableData, subCellWidth, spaceBetweenCells) => {
     let currentMaxRowsPerPage;
     let startY;
+
     if (currentPage === 1) {
         // For the first page, consider the header height
         startY = headerHeight + 20;
     } else {
         // For subsequent pages, start from the top of the page
-        startY = 10;
+        startY = 10 + 12;
     }
 
     while (currentRow < tableData.length && currentRow < maxRowsPerPage * currentPage) {
@@ -202,7 +205,7 @@ const drawTableRows = (rowHeight, maxRowsPerPage, currentRow, currentPage, heade
 };
 
 const bodySection = (headerHeight) => {
-    doc.setFontSize(9);
+    doc.setFontSize(8);
     const subCellWidth = 15.4;
     const spaceBetweenCells = 2;
     const tableSubHeaders = ["Sign", "Location", "Asset ID", "Type", "00:00", "02:00", "04:00", "06:00", "08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00", "22:00"];
@@ -243,7 +246,6 @@ const bodySection = (headerHeight) => {
             "inactive",
             "OK",
         ],
-
     ];
 
     drawTableHeaders(headerHeight);
@@ -262,6 +264,9 @@ const bodySection = (headerHeight) => {
         // Add a new page if there are more rows to be drawn
         if (currentPage > 1) {
             doc.addPage({ orientation: "landscape", unit: "mm", format: 'a4' });
+
+            drawTableHeaders(2);
+            drawTableSubHeader(tableSubHeaders, subCellWidth, spaceBetweenCells, 2);
         }
 
         drawTableRows(rowHeight, maxRowsPerPage, currentRow, currentPage, headerHeight, tableData, subCellWidth, spaceBetweenCells);
