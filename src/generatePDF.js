@@ -3,6 +3,8 @@ import { jsPDF } from 'https://cdn.skypack.dev/jspdf@2.4.0';
 const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: 'a4' });
 doc.addFont('../assets/fonts/arial.ttf', 'arial_normal', 'normal');
 doc.addFont('../assets/fonts/arial_bold.ttf', 'arial_bold', 'bold');
+
+// Gaps
 const gap = 0.7;
 const lineGap = 8;
 
@@ -15,6 +17,59 @@ const purple_color = "#8F39A9";
 const light_purple_color = "#F6E8FA";
 const gray_color = "#E6E9EF";
 const dark_gray_color = "#344563";
+
+// Data
+const reportInfo = {
+    "reportGeneratedBy": "Yousef Roshandel",
+    "reportGenerateDate": "10/05/2022 - 12:30",
+    "projectDetails": [
+        "Youse's Project #23",
+        "C2508-156",
+        "XXXXX",
+        "Graham construction",
+        "50mph",
+        "HWM_TM_C2508-156_005"
+    ]
+};
+const tableSubHeaders = ["Sign", "Location", "Asset ID", "Type", "00:00", "02:00", "04:00", "06:00", "08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00", "22:00"];
+const tableData = [
+    [
+        "40 repeater",
+        "38/5-50",
+        "C2508-156",
+        "HWM",
+        "OK",
+        "inactive",
+        "Alert",
+        "OK",
+        "OK",
+        "OK",
+        "inactive",
+        "OK",
+        "OK",
+        "inactive",
+        "OK",
+        "Alert",
+    ],
+    [
+        "401 Repeater",
+        "25/9-88",
+        "AB607-256",
+        "HWM",
+        "OK",
+        "inactive",
+        "Alert",
+        "OK",
+        "OK",
+        "OK",
+        "Alert",
+        "OK",
+        "Alert",
+        "OK",
+        "inactive",
+        "OK",
+    ],
+];
 
 // Helper function to set font and text color
 const textStyle = (font, style, color) => {
@@ -51,19 +106,6 @@ const truncateText = (text, maxWidth, fontSize) => {
 
 const headerSection = () => {
     doc.setFontSize(10);
-
-    const reportInfo = {
-        "reportGeneratedBy": "Yousef Roshandel",
-        "reportGenerateDate": "10/05/2022 - 12:30",
-        "projectDetails": [
-            "Youse's Project #23",
-            "C2508-156",
-            "XXXXX",
-            "Graham construction",
-            "50mph",
-            "HWM_TM_C2508-156_005"
-        ]
-    };
 
     // Add content to the header section
     const headerText = "Header Section Text";
@@ -208,45 +250,6 @@ const bodySection = (headerHeight) => {
     doc.setFontSize(8);
     const subCellWidth = 15.4;
     const spaceBetweenCells = 2;
-    const tableSubHeaders = ["Sign", "Location", "Asset ID", "Type", "00:00", "02:00", "04:00", "06:00", "08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00", "22:00"];
-    const tableData = [
-        [
-            "40 repeater",
-            "38/5-50",
-            "C2508-156",
-            "HWM",
-            "OK",
-            "inactive",
-            "Alert",
-            "OK",
-            "OK",
-            "OK",
-            "inactive",
-            "OK",
-            "OK",
-            "inactive",
-            "OK",
-            "Alert",
-        ],
-        [
-            "401 Repeater",
-            "25/9-88",
-            "AB607-256",
-            "HWM",
-            "OK",
-            "inactive",
-            "Alert",
-            "OK",
-            "OK",
-            "OK",
-            "Alert",
-            "OK",
-            "Alert",
-            "OK",
-            "inactive",
-            "OK",
-        ],
-    ];
 
     drawTableHeaders(headerHeight);
     drawTableSubHeader(tableSubHeaders, subCellWidth, spaceBetweenCells, headerHeight);
