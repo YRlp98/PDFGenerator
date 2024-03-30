@@ -52,24 +52,6 @@ const tableData = [
         "OK",
         "Alert",
     ],
-    [
-        "401 Repeater",
-        "25/9-88",
-        "AB607-256",
-        "HWM",
-        "OK",
-        "inactive",
-        "Alert",
-        "OK",
-        "OK",
-        "OK",
-        "Alert",
-        "OK",
-        "Alert",
-        "OK",
-        "inactive",
-        "OK",
-    ],
 ];
 
 // Helper function to set font and text color
@@ -306,7 +288,7 @@ const bodySection = (headerHeight) => {
 
     textStyle("arial_normal", "normal", black_color);
     const rowHeight = 6;
-    const maxRowsPerPage = 16;
+    const maxRowsPerPage = 16; // 22 for the subsequent pages
     let currentRow = 0;
     let currentPage = 1;
 
@@ -320,9 +302,12 @@ const bodySection = (headerHeight) => {
 
             drawTableHeaders(2);
             drawTableSubHeader(tableSubHeaders, subCellWidth, spaceBetweenCells, 2);
+            drawTableRows(rowHeight, 22, currentRow, currentPage, headerHeight, tableData, subCellWidth, spaceBetweenCells);
+        } else {
+            drawTableRows(rowHeight, maxRowsPerPage, currentRow, currentPage, headerHeight, tableData, subCellWidth, spaceBetweenCells);
         }
 
-        drawTableRows(rowHeight, maxRowsPerPage, currentRow, currentPage, headerHeight, tableData, subCellWidth, spaceBetweenCells);
+        // drawTableRows(rowHeight, maxRowsPerPage, currentRow, currentPage, headerHeight, tableData, subCellWidth, spaceBetweenCells);
 
         // Move to the next page
         currentPage++;
