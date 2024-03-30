@@ -167,42 +167,42 @@ const headerSection = () => {
     textStyle("arial_bold", "bold", dark_gray_color);
     addText("Project Name:", rectangleHalfWidth + 2, headerHeight + lineGap - 2);
     textStyle("arial_normal", "normal", dark_gray_color);
-    addText("Youse's Project #23", rectangleHalfWidth + 90, headerHeight + lineGap - 2);
+    addText(reportInfo.projectDetails[0], rectangleHalfWidth + 90, headerHeight + lineGap - 2);
 
     // Project Number
     addRoundedRect(rectangleHalfWidth, headerHeight + lineGap + 1, 170, 6, 1, light_purple_color, light_purple_color, 0.5);
     textStyle("arial_bold", "bold", dark_gray_color);
     addText("Project Number:", rectangleHalfWidth + 2, headerHeight + lineGap + 5);
     textStyle("arial_normal", "normal", dark_gray_color);
-    addText("C2508-156", rectangleHalfWidth + 90, headerHeight + lineGap + 5);
+    addText(reportInfo.projectDetails[1], rectangleHalfWidth + 90, headerHeight + lineGap + 5);
 
     // Client Project Number
     addRoundedRect(rectangleHalfWidth, headerHeight + lineGap + 8, 170, 6, 1, lighter_purple_color, lighter_purple_color, 0.5);
     textStyle("arial_bold", "bold", dark_gray_color);
     addText("Client Project Number:", rectangleHalfWidth + 2, headerHeight + lineGap + 12);
     textStyle("arial_normal", "normal", dark_gray_color);
-    addText("XXXXX", rectangleHalfWidth + 90, headerHeight + lineGap + 12);
+    addText(reportInfo.projectDetails[2], rectangleHalfWidth + 90, headerHeight + lineGap + 12);
 
     // Customer / Client
     addRoundedRect(rectangleHalfWidth, headerHeight + lineGap + 15, 170, 6, 1, light_purple_color, light_purple_color, 0.5);
     textStyle("arial_bold", "bold", dark_gray_color);
     addText("Customer / Client:", rectangleHalfWidth + 2, headerHeight + lineGap + 19);
     textStyle("arial_normal", "normal", dark_gray_color);
-    addText("Graham construction", rectangleHalfWidth + 90, headerHeight + lineGap + 19);
+    addText(reportInfo.projectDetails[3], rectangleHalfWidth + 90, headerHeight + lineGap + 19);
 
     // Traffic Management Type
     addRoundedRect(rectangleHalfWidth, headerHeight + lineGap + 22, 170, 6, 1, lighter_purple_color, lighter_purple_color, 0.5);
     textStyle("arial_bold", "bold", dark_gray_color);
     addText("Traffic Management Type:", rectangleHalfWidth + 2, headerHeight + lineGap + 26);
     textStyle("arial_normal", "normal", dark_gray_color);
-    addText("50mph", rectangleHalfWidth + 90, headerHeight + lineGap + 26);
+    addText(reportInfo.projectDetails[4], rectangleHalfWidth + 90, headerHeight + lineGap + 26);
 
     // Checked in Accordance with Drawing Number(s)
     addRoundedRect(rectangleHalfWidth, headerHeight + lineGap + 29, 170, 6, 1, light_purple_color, light_purple_color, 0.5);
     textStyle("arial_bold", "bold", dark_gray_color);
     addText("Checked in Accordance with Drawing Number(s):", rectangleHalfWidth + 2, headerHeight + lineGap + 33);
     textStyle("arial_normal", "normal", dark_gray_color);
-    addText("HWM_TM_C2508-156_005", rectangleHalfWidth + 90, headerHeight + lineGap + 33);
+    addText(reportInfo.projectDetails[5], rectangleHalfWidth + 90, headerHeight + lineGap + 33);
 
     return headerHeight + rectangleHeight;
 };
